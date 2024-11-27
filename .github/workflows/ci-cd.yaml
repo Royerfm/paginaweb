@@ -34,5 +34,14 @@ jobs:
           # Matar el proceso si ya está usando el puerto 8080
           ssh -i private_key.pem ec2-user@98.81.235.62 "sudo fuser -k 8080/tcp || true"
 
-          # Iniciar el servidor HTTP en segundo plano
-          ssh -i private_key.pem ec2-user@98.81.235.62 "cd ~/paginaweb && python3 -m http.server 8080 & disown"
+      - name: Start HTTP server on EC2
+        run: |
+          # Usar tmux para ejecutar el servidor HTTP en segundo plano
+          ssh -i private_key.pem ec2-user@98.81.235.62 << 'EOF'
+            # Instalar tmux si no está instalado
+            if ! command -v tmux &> /dev/null; then
+              sudo yum install -y tmux
+            fi
+            # Iniciar un nuevo tmux session y ejecutar el servidor HTTP
+            tmux new-session -d -s web_server "cd ~/paginaweb && python3 -m http.server 8080"
+          EOF
