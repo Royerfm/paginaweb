@@ -25,14 +25,6 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          # Limpiar la carpeta en EC2
           ssh -i private_key.pem ec2-user@98.81.235.62 "rm -rf ~/paginaweb && mkdir ~/paginaweb"
-          
-          # Copiar los archivos al servidor EC2
           scp -i private_key.pem -r ./* ec2-user@98.81.235.62:~/paginaweb/
-          
-          # Matar el proceso si ya está usando el puerto 8080
-          ssh -i private_key.pem ec2-user@98.81.235.62 "sudo fuser -k 8080/tcp || true"
-
-          # Iniciar el servidor HTTP
           ssh -i private_key.pem ec2-user@98.81.235.62 "cd ~/paginaweb && nohup python3 -m http.server 8080 &"
