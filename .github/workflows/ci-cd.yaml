@@ -1,0 +1,25 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Desplegar al hacer push a la rama main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure SSH
+        run: |
+          echo "${{ secrets.EC2_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+
+      - name: Deploy to EC2
+        run: |
+          ssh -i private_key.pem ec2-user@98.81.235.62 "rm -rf ~/paginaweb && mkdir ~/paginaweb"
+          scp -i private_key.pem -r ./* ec2-user@98.81.235.62:~/paginaweb/
+          ssh -i private_key.pem ec2-user@98.81.235.62 "cd ~/paginaweb && nohup python3 -m http.server 8080 &"
