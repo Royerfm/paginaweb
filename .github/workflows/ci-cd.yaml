@@ -21,23 +21,23 @@ jobs:
       - name: Add EC2 host to known_hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H 98.81.235.62 >> ~/.ssh/known_hosts
+          ssh-keyscan -H 35.174.116.50 >> ~/.ssh/known_hosts
 
       - name: Deploy to EC2
         run: |
           # Limpiar la carpeta en EC2
-          ssh -i private_key.pem ec2-user@98.81.235.62 "rm -rf ~/paginaweb && mkdir ~/paginaweb"
+          ssh -i private_key.pem ec2-user@35.174.116.50 "rm -rf ~/paginaweb && mkdir ~/paginaweb"
           
           # Copiar los archivos al servidor EC2
-          scp -i private_key.pem -r ./* ec2-user@98.81.235.62:~/paginaweb/
+          scp -i private_key.pem -r ./* ec2-user@35.174.116.50:~/paginaweb/
           
           # Matar el proceso si ya está usando el puerto 8080
-          ssh -i private_key.pem ec2-user@98.81.235.62 "sudo fuser -k 8080/tcp || true"
+          ssh -i private_key.pem ec2-user@35.174.116.50 "sudo fuser -k 8080/tcp || true"
 
       - name: Start HTTP server on EC2
         run: |
           # Usar tmux para ejecutar el servidor HTTP en segundo plano
-          ssh -i private_key.pem ec2-user@98.81.235.62 << 'EOF'
+          ssh -i private_key.pem ec2-user@35.174.116.50 << 'EOF'
             # Instalar tmux si no está instalado
             if ! command -v tmux &> /dev/null; then
               sudo yum install -y tmux
